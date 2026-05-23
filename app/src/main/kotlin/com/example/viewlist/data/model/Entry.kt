@@ -10,7 +10,8 @@ data class Entry(
     val impression: String = "",
     val rating: Float = 0f,
     val imageUrl: String = "",
-    val category: String = "Film",
+    val category: String = "Фільм",
     val status: String,
+    val watchedAt: Long = 0L,
     val createdAt: Long = System.currentTimeMillis()
 )

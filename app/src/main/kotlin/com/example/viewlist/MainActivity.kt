@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.viewlist.ui.screens.AddEditEntryScreen
+import com.example.viewlist.ui.screens.DetailScreen
 import com.example.viewlist.ui.screens.HomeScreen
 import com.example.viewlist.ui.theme.Background
 import com.example.viewlist.ui.theme.ViewListTheme
@@ -37,12 +38,24 @@ private fun ViewListNavGraph() {
     NavHost(navController = nav, startDestination = "home") {
         composable("home") {
             HomeScreen(
-                onAddEntry = { status -> nav.navigate("entry/-1/$status") },
+                onAddEntry  = { status -> nav.navigate("entry/-1/$status") },
+                onViewEntry = { id -> nav.navigate("detail/$id") },
                 onEditEntry = { id -> nav.navigate("entry/$id/viewed") },
             )
         }
         composable(
-            route = "entry/{entryId}/{status}",
+            route     = "detail/{entryId}",
+            arguments = listOf(navArgument("entryId") { type = NavType.LongType }),
+        ) { back ->
+            val entryId = back.arguments!!.getLong("entryId")
+            DetailScreen(
+                entryId = entryId,
+                onBack  = { nav.popBackStack() },
+                onEdit  = { nav.navigate("entry/$entryId/viewed") },
+            )
+        }
+        composable(
+            route     = "entry/{entryId}/{status}",
             arguments = listOf(
                 navArgument("entryId") { type = NavType.LongType },
                 navArgument("status")  { type = NavType.StringType },
@@ -51,9 +64,9 @@ private fun ViewListNavGraph() {
             val entryId = back.arguments!!.getLong("entryId").takeIf { it != -1L }
             val status  = back.arguments!!.getString("status") ?: "viewed"
             AddEditEntryScreen(
-                entryId = entryId,
+                entryId       = entryId,
                 initialStatus = status,
-                onBack = { nav.popBackStack() },
+                onBack        = { nav.popBackStack() },
             )
         }
     }
